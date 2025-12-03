@@ -1,0 +1,17 @@
+{
+    "user": {
+        "id": "integer",
+        "name": "string",
+        "email": "string",
+        "gender": "string",
+        "age": "integer"
+    },
+    "comments": [
+        {
+            "id": 1,
+            "body": "This is some awesome thinking!",
+            "postId": 242,
+            "likes": 3
+        }
+    ]
+}

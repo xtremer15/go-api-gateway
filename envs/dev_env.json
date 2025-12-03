@@ -1,0 +1,10 @@
+{
+    "port": 8080,
+    "env": "dev",
+    "db_credentials_file": "envs/dev_db_creds_dev.json",
+    "log_level": "info",
+    "features":{
+        "enable_feature_x": true,
+        "enable_feature_y": false
+    }]
+}
