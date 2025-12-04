@@ -1,13 +1,78 @@
 package main
 
 import (
-	common_utils "api-gateway/pkg/common-utils"
+	"api-gateway/pkg/logger"
+	"bytes"
 	"fmt"
+	"io"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 
-	common_utils.ReadFile("assets/schemas.json")
-	fmt.Println("\n")
-	common_utils.ReadJsonFile("envs/dev_env.json")
+	// common_utils.ReadFile("assets/schemas.json")
+	// fmt.Println("\n")
+	// common_utils.ReadJsonFile("envs/dev_env.json")
+
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+
+	router.Get("/users", getUsersHandler)
+	router.Post("/users/add", addUserHandler)
+
+	http.ListenAndServe(":5200", router)
+
+}
+
+func getUsersHandler(respWriter http.ResponseWriter, request *http.Request) {
+	respWriter.Header().Set("Content-Type", "application/json")
+
+	resp, err := http.Get("https://dummyjson.com/users")
+	if err != nil {
+		http.Error(respWriter, "failed to fetch users", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(respWriter, "failed to read response", http.StatusInternalServerError)
+		return
+	}
+
+	respWriter.WriteHeader(resp.StatusCode)
+	// fmt.Println(string(data))
+	respWriter.Write(data)
+}
+
+func addUserHandler(respWriter http.ResponseWriter, request *http.Request) {
+	log := logger.New("INFO")
+	rawData, err := io.ReadAll(request.Body)
+	parsedJson := bytes.NewBuffer(rawData)
+
+	log.Info("addUserHandler called with body:", map[string]interface{}{
+		"body": parsedJson.String(),
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	resp, err := http.Post("https://dummyjson.com/users/add", "application/json", parsedJson)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Read and print the response
+	json, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("got data", rawData)
+	respWriter.Write(json)
 }
