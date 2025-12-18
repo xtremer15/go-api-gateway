@@ -6,5 +6,6 @@
     "features":{
         "enable_feature_x": true,
         "enable_feature_y": false
-    }]
+    },
+    "baseUrl":"https://dummyjson.com/"
 }

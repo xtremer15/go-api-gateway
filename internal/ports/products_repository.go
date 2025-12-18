@@ -9,33 +9,33 @@ import (
 	"net/http"
 )
 
-type HttpUsersRepository struct {
+type HttpProductRepository struct {
 	logger  *logger.Logger
 	client  *http.Client
 	baseUrl string
 }
 
-func NewUserHttpRepo(httpClient *http.Client) UserRepo {
-	return &HttpUsersRepository{ // -> *HttpUsersRepository
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Users,
+func NewProductRepo(httpClient *http.Client) ProductsRepo {
+	return &HttpProductRepository{
 		client:  httpClient,
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Products,
 	}
 }
 
-func (repo *HttpUsersRepository) GetUsers() ([]types.User, error) {
+func (repo *HttpProductRepository) GetProducts() ([]types.Product, error) {
 	resp, err := repo.client.Get(repo.baseUrl)
 	if err != nil {
-		return []types.User{}, err
+		return []types.Product{}, err
 	}
 	defer resp.Body.Close()
+
 	var result struct {
-		Users []types.User `json:"users"`
+		Products []types.Product
 	}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return []types.User{}, err
+		return []types.Product{}, err
 	}
 
-	return result.Users, nil
-
+	return result.Products, nil
 }

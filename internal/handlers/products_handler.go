@@ -7,15 +7,15 @@ import (
 	"net/http"
 )
 
-type UsersHandlers struct {
-	Svc    *services.UserService
+type ProductsHandler struct {
+	Svc    *services.ProductsService
 	Logger *logger.Logger
 }
 
-func (handler *UsersHandlers) GetUsersHandler(response http.ResponseWriter, request *http.Request) {
+func (handler *ProductsHandler) GetProducts(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 
-	users, err := handler.Svc.GetUsers()
+	products, err := handler.Svc.GetProducts()
 
 	if err != nil {
 		handler.Logger.Error("failed to fetch users", map[string]interface{}{
@@ -26,5 +26,5 @@ func (handler *UsersHandlers) GetUsersHandler(response http.ResponseWriter, requ
 	}
 
 	response.WriteHeader(http.StatusOK)
-	json.NewEncoder(response).Encode(users)
+	json.NewEncoder(response).Encode(products)
 }

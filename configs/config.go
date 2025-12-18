@@ -18,6 +18,7 @@ type Config struct {
 	FeatureFlags   map[string]bool
 	Timeout        int
 	RequestLimiter int
+	BaseURL        string
 }
 
 func Load() *Config {
@@ -27,6 +28,7 @@ func Load() *Config {
 		DbConnectionString: getEnv("DBCREDS", "user:password@/dbname"),
 		LogLevel:           getEnv("LOG_LEVEL", "INFO"),
 		FeatureFlags:       make(map[string]bool),
+		BaseURL:            getEnv("URL", "https://dummyjson.com"),
 	}
 }
 
