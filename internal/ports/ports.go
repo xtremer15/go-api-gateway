@@ -11,3 +11,11 @@ type UserRepo interface {
 type ProductsRepo interface {
 	GetProducts() ([]types.Product, error)
 }
+
+type TodoRepo interface {
+	GetTodos() ([]types.Todo, error)
+}
+
+type CommentRepo interface {
+	GetComments() ([]types.Comment, error)
+}

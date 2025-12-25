@@ -9,33 +9,37 @@ import (
 	"net/http"
 )
 
-type HttpProductRepository struct {
+type HttpCommentsRepository struct {
 	logger  *logger.Logger
 	client  *http.Client
 	baseUrl string
 }
 
-func NewProductRepo(httpClient *http.Client) ProductsRepo {
-	return &HttpProductRepository{
+func NewHttpCommentRepo(httpClient *http.Client) CommentRepo {
+	return &HttpCommentsRepository{
 		client:  httpClient,
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Products,
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Comments,
 	}
 }
 
-func (repo *HttpProductRepository) GetProducts() ([]types.Product, error) {
+func (repo *HttpCommentsRepository) GetComments() ([]types.Comment, error) {
 	resp, err := repo.client.Get(repo.baseUrl)
+
 	if err != nil {
-		return []types.Product{}, err
+		return []types.Comment{}, err
 	}
+
 	defer resp.Body.Close()
 
 	var result struct {
-		Products []types.Product `json:"products"`
-	}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return []types.Product{}, err
+		Comments []types.Comment `json:"comments"`
 	}
 
-	return result.Products, nil
+	err = json.NewDecoder(resp.Body).Decode(&result)
+
+	if err != nil {
+		return []types.Comment{}, err
+	}
+
+	return result.Comments, nil
 }

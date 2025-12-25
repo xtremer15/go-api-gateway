@@ -28,6 +28,7 @@ func (repo *HttpUsersRepository) GetUsers() ([]types.User, error) {
 		return []types.User{}, err
 	}
 	defer resp.Body.Close()
+
 	var result struct {
 		Users []types.User `json:"users"`
 	}

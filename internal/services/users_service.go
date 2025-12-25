@@ -15,7 +15,7 @@ func (svc *UserService) GetUsers() ([]types.User, error) {
 	users, err := svc.UserRepo.GetUsers()
 
 	if err != nil {
-		svc.Logger.Fatal("Users not found")
+		svc.Logger.Error("Users not found")
 		return nil, err
 	}
 

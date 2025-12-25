@@ -12,7 +12,7 @@ type UsersHandlers struct {
 	Logger *logger.Logger
 }
 
-func (handler *UsersHandlers) GetUsersHandler(response http.ResponseWriter, request *http.Request) {
+func (handler *UsersHandlers) GetUsers(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 
 	users, err := handler.Svc.GetUsers()

@@ -26,7 +26,12 @@ func main() {
 	// 2. Initialize repository layer
 	usersRepository := ports.NewUserHttpRepo(httpClient)
 	productsRepository := ports.NewProductRepo(httpClient)
+	todosRepository := ports.NewHttpTodoRepo(httpClient)
+	commentsRepository := ports.NewHttpCommentRepo(httpClient)
 
+	//3.Init Services layer
+	//TODO: Move init of the service in the services layer of each service by creating a function instead of
+	//creating a struct with defaults values
 	userSvc := &services.UserService{
 		UserRepo: usersRepository,
 		Logger:   log,
@@ -37,13 +42,36 @@ func main() {
 		Logger:       log,
 	}
 
+	todosSvc := &services.ToDoService{
+		ToDoRepo: todosRepository,
+		Logger:   log,
+	}
+
+	commentsSvc := &services.CommentService{
+		CommentsRepo: commentsRepository,
+		Logger:       log,
+	}
+
+	//4.Init Handlers layer
+	//TODO: Move init of the repo in the repo layer of each repo by creating a function instead of
+	//creating a struct with defaults values
 	productsHandler := &handlers.ProductsHandler{
 		Svc:    productsSvc,
 		Logger: log,
 	}
 
-	handler := &handlers.UsersHandlers{
+	usersHandler := &handlers.UsersHandlers{
 		Svc:    userSvc,
+		Logger: log,
+	}
+
+	todoHandler := &handlers.TodoHandler{
+		Svc:    todosSvc,
+		Logger: log,
+	}
+
+	commentsHandler := &handlers.CommentHandler{
+		Svc:    commentsSvc,
 		Logger: log,
 	}
 
@@ -51,33 +79,14 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
-	router.Get("/users", handler.GetUsersHandler)
+	router.Get("/users", usersHandler.GetUsers)
 	router.Get("/products", productsHandler.GetProducts)
+	router.Get("/todos", todoHandler.GetTodos)
+	router.Get("/comments", commentsHandler.GetComments)
 
 	log.Info("Starting server on :5200", nil)
 	http.ListenAndServe(":5200", router)
 
-}
-
-func getUsersHandler(respWriter http.ResponseWriter, request *http.Request) {
-	respWriter.Header().Set("Content-Type", "application/json")
-
-	resp, err := http.Get("https://dummyjson.com/users")
-	if err != nil {
-		http.Error(respWriter, "failed to fetch users", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(respWriter, "failed to read response", http.StatusInternalServerError)
-		return
-	}
-
-	respWriter.WriteHeader(resp.StatusCode)
-	// fmt.Println(string(data))
-	respWriter.Write(data)
 }
 
 func addUserHandler(respWriter http.ResponseWriter, request *http.Request) {
