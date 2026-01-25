@@ -12,6 +12,13 @@ type UsersHandlers struct {
 	Logger *logger.Logger
 }
 
+func NewUserHandler(svc *services.UserService, logger *logger.Logger) *UsersHandlers {
+	return &UsersHandlers{
+		Svc:    svc,
+		Logger: logger,
+	}
+}
+
 func (handler *UsersHandlers) GetUsers(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 

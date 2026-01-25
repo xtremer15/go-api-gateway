@@ -12,6 +12,13 @@ type ProductsHandler struct {
 	Logger *logger.Logger
 }
 
+func NewProductHander(svc *services.ProductsService, logger *logger.Logger) *ProductsHandler {
+	return &ProductsHandler{
+		Svc:    svc,
+		Logger: logger,
+	}
+}
+
 func (handler *ProductsHandler) GetProducts(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 

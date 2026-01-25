@@ -11,6 +11,13 @@ type CommentService struct {
 	Logger       *logger.Logger
 }
 
+func NewCommentsService(commentsRepo *ports.CommentRepo, logger *logger.Logger) *CommentService {
+	return &CommentService{
+		CommentsRepo: *commentsRepo,
+		Logger:       logger,
+	}
+}
+
 func (svc *CommentService) GetComments() ([]types.Comment, error) {
 	comments, err := svc.CommentsRepo.GetComments()
 

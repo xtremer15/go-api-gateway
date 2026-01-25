@@ -11,6 +11,13 @@ type UserService struct {
 	Logger   *logger.Logger
 }
 
+func NewUserService(userRepo ports.UserRepo, logger *logger.Logger) *UserService {
+	return &UserService{
+		UserRepo: userRepo,
+		Logger:   logger,
+	}
+}
+
 func (svc *UserService) GetUsers() ([]types.User, error) {
 	users, err := svc.UserRepo.GetUsers()
 

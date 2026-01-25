@@ -11,6 +11,13 @@ type ToDoService struct {
 	Logger   *logger.Logger
 }
 
+func NewToDoService(toDoRepos *ports.TodoRepo, logger *logger.Logger) *ToDoService {
+	return &ToDoService{
+		ToDoRepo: *toDoRepos,
+		Logger:   logger,
+	}
+}
+
 func (svc *ToDoService) GetProducts() ([]types.Todo, error) {
 	todos, err := svc.ToDoRepo.GetTodos()
 

@@ -12,6 +12,13 @@ type CommentHandler struct {
 	Logger *logger.Logger
 }
 
+func NewCommentsHandler(svc *services.CommentService, logger *logger.Logger) *CommentHandler {
+	return &CommentHandler{
+		Svc:    svc,
+		Logger: logger,
+	}
+}
+
 func (handler *CommentHandler) GetComments(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-type", "application/json")
 

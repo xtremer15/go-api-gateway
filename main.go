@@ -22,6 +22,7 @@ func main() {
 
 	log := logger.New("INFO")
 	httpClient := &http.Client{}
+	var port int = 5200
 
 	// 2. Initialize repository layer
 	usersRepository := ports.NewUserHttpRepo(httpClient)
@@ -30,50 +31,16 @@ func main() {
 	commentsRepository := ports.NewHttpCommentRepo(httpClient)
 
 	//3.Init Services layer
-	//TODO: Move init of the service in the services layer of each service by creating a function instead of
-	//creating a struct with defaults values
-	userSvc := &services.UserService{
-		UserRepo: usersRepository,
-		Logger:   log,
-	}
-
-	productsSvc := &services.ProductsService{
-		ProductsRepo: productsRepository,
-		Logger:       log,
-	}
-
-	todosSvc := &services.ToDoService{
-		ToDoRepo: todosRepository,
-		Logger:   log,
-	}
-
-	commentsSvc := &services.CommentService{
-		CommentsRepo: commentsRepository,
-		Logger:       log,
-	}
+	usrSvc := services.NewUserService(usersRepository, log)
+	productsSvc := services.NewProductsService(productsRepository, log)
+	todosSvc := services.NewToDoService(&todosRepository, log)
+	commentsSvc := services.NewCommentsService(&commentsRepository, log)
 
 	//4.Init Handlers layer
-	//TODO: Move init of the repo in the repo layer of each repo by creating a function instead of
-	//creating a struct with defaults values
-	productsHandler := &handlers.ProductsHandler{
-		Svc:    productsSvc,
-		Logger: log,
-	}
-
-	usersHandler := &handlers.UsersHandlers{
-		Svc:    userSvc,
-		Logger: log,
-	}
-
-	todoHandler := &handlers.TodoHandler{
-		Svc:    todosSvc,
-		Logger: log,
-	}
-
-	commentsHandler := &handlers.CommentHandler{
-		Svc:    commentsSvc,
-		Logger: log,
-	}
+	usersHandler := handlers.NewUserHandler(usrSvc, log)
+	productsHandler := handlers.NewProductHander(productsSvc, log)
+	todoHandler := handlers.NewTodoHandler(todosSvc, log)
+	commentsHandler := handlers.NewCommentsHandler(commentsSvc, log)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -84,7 +51,7 @@ func main() {
 	router.Get("/todos", todoHandler.GetTodos)
 	router.Get("/comments", commentsHandler.GetComments)
 
-	log.Info("Starting server on :5200", nil)
+	fmt.Println("API Gateway is running on port: ", port)
 	http.ListenAndServe(":5200", router)
 
 }

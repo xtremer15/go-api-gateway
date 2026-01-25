@@ -12,6 +12,13 @@ type TodoHandler struct {
 	Logger *logger.Logger
 }
 
+func NewTodoHandler(svc *services.ToDoService, logger *logger.Logger) *TodoHandler {
+	return &TodoHandler{
+		Svc:    svc,
+		Logger: logger,
+	}
+}
+
 func (handler *TodoHandler) GetTodos(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 
