@@ -51,7 +51,7 @@ func main() {
 	router.Get("/todos", todoHandler.GetTodos)
 	router.Get("/comments", commentsHandler.GetComments)
 
-	fmt.Println("API Gateway is running on port: ", port)
+	fmt.Println("API Gateway is running on  nr port: ", port)
 	http.ListenAndServe(":5200", router)
 
 }
