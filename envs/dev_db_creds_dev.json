@@ -2,6 +2,6 @@
     "database_host": "localhost",
     "database_port": 5432,
     "database_username": "dev_user",
-    "database_password": "dev_password",
+    "database_password": "dev_password"
 
 }

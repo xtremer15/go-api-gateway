@@ -15,8 +15,9 @@ type HttpTodoRepository struct {
 	baseUrl string
 }
 
-func NewHttpTodoRepo(hpttClient *http.Client) TodoRepo {
+func NewHttpTodoRepo(hpttClient *http.Client, logger *logger.Logger) TodoRepo {
 	return &HttpTodoRepository{
+		logger:  logger,
 		baseUrl: config.Load().BaseURL + routes.PathRoutes.Todos,
 		client:  hpttClient,
 	}

@@ -19,3 +19,7 @@ type TodoRepo interface {
 type CommentRepo interface {
 	GetComments() ([]types.Comment, error)
 }
+
+type AggregatorRepo interface {
+	GetAggregatedData() (any, error)
+}

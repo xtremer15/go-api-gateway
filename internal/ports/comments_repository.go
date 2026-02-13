@@ -15,8 +15,9 @@ type HttpCommentsRepository struct {
 	baseUrl string
 }
 
-func NewHttpCommentRepo(httpClient *http.Client) CommentRepo {
+func NewHttpCommentRepo(httpClient *http.Client, logger *logger.Logger) CommentRepo {
 	return &HttpCommentsRepository{
+		logger:  logger,
 		client:  httpClient,
 		baseUrl: config.Load().BaseURL + routes.PathRoutes.Comments,
 	}

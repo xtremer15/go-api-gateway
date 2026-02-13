@@ -1,4 +1,4 @@
-// Package logger provides structured JSON logging for the Jira Clone Backend application.
+// Package logger provides structured JSON logging.
 // It supports multiple log levels and structured logging with custom fields.
 package logger
 

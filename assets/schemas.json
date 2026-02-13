@@ -1,17 +1,8 @@
 {
-    "user": {
-        "id": "integer",
-        "name": "string",
-        "email": "string",
-        "gender": "string",
-        "age": "integer"
-    },
-    "comments": [
-        {
-            "id": 1,
-            "body": "This is some awesome thinking!",
-            "postId": 242,
-            "likes": 3
-        }
-    ]
+  "Comments": {
+    "Comm_3": "",
+    "comm_1": "Comment 1",
+    "comm_2": "Comment 2"
+  },
+  "Users": "Users"
 }

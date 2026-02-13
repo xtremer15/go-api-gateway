@@ -16,8 +16,15 @@ import (
 
 func main() {
 
+	// var dataToWrite = map[string]interface{}{
+	// 	"name":  "John Doe",
+	// 	"age":   30,
+	// 	"email": "test_mail@example.com",
+	// }
 	// common_utils.ReadFile("assets/schemas.json")
-	// fmt.Println("\n")
+	// common_utils.WriteToFile("assets/schemas.json", dataToWrite)
+	// fmt.Println("before===========\n====================")
+	// common_utils.ReadFile("assets/schemas.json")
 	// common_utils.ReadJsonFile("envs/dev_env.json")
 
 	log := logger.New("INFO")
@@ -27,20 +34,23 @@ func main() {
 	// 2. Initialize repository layer
 	usersRepository := ports.NewUserHttpRepo(httpClient)
 	productsRepository := ports.NewProductRepo(httpClient)
-	todosRepository := ports.NewHttpTodoRepo(httpClient)
-	commentsRepository := ports.NewHttpCommentRepo(httpClient)
+	todosRepository := ports.NewHttpTodoRepo(httpClient, log)
+	commentsRepository := ports.NewHttpCommentRepo(httpClient, log)
+	aggregatorRepository := ports.NewAggregatorRepo(httpClient, log)
 
 	//3.Init Services layer
 	usrSvc := services.NewUserService(usersRepository, log)
 	productsSvc := services.NewProductsService(productsRepository, log)
-	todosSvc := services.NewToDoService(&todosRepository, log)
-	commentsSvc := services.NewCommentsService(&commentsRepository, log)
+	todosSvc := services.NewToDoService(todosRepository, log)
+	commentsSvc := services.NewCommentsService(commentsRepository, log)
+	aggregatedSvc := services.NewAggregatorService(aggregatorRepository, log)
 
 	//4.Init Handlers layer
 	usersHandler := handlers.NewUserHandler(usrSvc, log)
 	productsHandler := handlers.NewProductHander(productsSvc, log)
 	todoHandler := handlers.NewTodoHandler(todosSvc, log)
 	commentsHandler := handlers.NewCommentsHandler(commentsSvc, log)
+	aggregateHandler := handlers.NewAggregatorHandler(aggregatedSvc, log)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -50,6 +60,7 @@ func main() {
 	router.Get("/products", productsHandler.GetProducts)
 	router.Get("/todos", todoHandler.GetTodos)
 	router.Get("/comments", commentsHandler.GetComments)
+	router.Post("/aggregate", aggregateHandler.AggregateData)
 
 	fmt.Println("API Gateway is running on  nr port: ", port)
 	http.ListenAndServe(":5200", router)

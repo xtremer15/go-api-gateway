@@ -11,9 +11,9 @@ type CommentService struct {
 	Logger       *logger.Logger
 }
 
-func NewCommentsService(commentsRepo *ports.CommentRepo, logger *logger.Logger) *CommentService {
+func NewCommentsService(commentsRepo ports.CommentRepo, logger *logger.Logger) *CommentService {
 	return &CommentService{
-		CommentsRepo: *commentsRepo,
+		CommentsRepo: commentsRepo,
 		Logger:       logger,
 	}
 }

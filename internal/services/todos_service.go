@@ -11,9 +11,9 @@ type ToDoService struct {
 	Logger   *logger.Logger
 }
 
-func NewToDoService(toDoRepos *ports.TodoRepo, logger *logger.Logger) *ToDoService {
+func NewToDoService(toDoRepos ports.TodoRepo, logger *logger.Logger) *ToDoService {
 	return &ToDoService{
-		ToDoRepo: *toDoRepos,
+		ToDoRepo: toDoRepos,
 		Logger:   logger,
 	}
 }

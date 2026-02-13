@@ -1,7 +1,6 @@
 package common_utils
 
 import (
-	common_types "api-gateway/pkg/types"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,8 +18,25 @@ func ReadFile(path string) string {
 	return string(fileContent)
 }
 
-func ReadJsonFile(path string) (*common_types.DBCreds, error) {
-	var config *common_types.DBCreds
+func WriteToFile(path string, dataToWrite any) {
+	file, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	json, err := json.MarshalIndent(dataToWrite, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.WriteString(string(json))
+}
+
+func WriteToFileBase64(path string, data []byte) error {
+	return os.WriteFile(path, data, 0644)
+}
+
+func ReadJsonFile(path string) (any, error) {
+	var config any
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
