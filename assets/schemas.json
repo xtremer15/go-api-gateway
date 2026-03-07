@@ -1,1 +1,57 @@
-{}
+{
+    "auth": {
+        "isAuthenticated": "bool",
+        "jwt": "string"
+    },
+    "root": "users",
+    "resources": {
+        "users": {
+            "endpoint": "/users",
+            "idParam": "userId",
+            "children": {
+                "posts": {
+                    "endpoint": "/posts/user/{userId}",
+                    "idParam": "userId",
+                    "children": {
+                        "comments": {
+                            "endpoint": "/comments/post/{postId}",
+                            "idParam": "postId",
+                            "children": {}
+                        }
+                    }
+                },
+                "carts": {
+                    "endpoint": "/carts/user/{userId}",
+                    "idParam": "userId",
+                    "children": {
+                        "products": {
+                            "endpoint": "/products",
+                            "idParam": "productId",
+                            "children": {}
+                        }
+                    }
+                },
+                "recipes": {
+                    "endpoint": "/recipes/user/{userId}",
+                    "idParam": "userId",
+                    "children": {}
+                },
+                "todos": {
+                    "endpoint": "/todos/user/{userId}",
+                    "idParam": "userId",
+                    "children": {}
+                },
+                "quotes": {
+                    "endpoint": "/quotes",
+                    "idParam": null,
+                    "children": {}
+                },
+                "image": {
+                    "endpoint": "/products",
+                    "idParam": "productId",
+                    "children": {}
+                }
+            }
+        }
+    }
+}
