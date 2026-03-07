@@ -29,6 +29,7 @@ type User struct {
 	UserAgent  string  `json:"userAgent"`
 	Crypto     Crypto  `json:"crypto"`
 	Role       string  `json:"role"`
+	Comment    Comment `json:"comment"`
 }
 
 type Hair struct {

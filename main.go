@@ -5,9 +5,7 @@ import (
 	"api-gateway/internal/ports"
 	"api-gateway/internal/services"
 	"api-gateway/pkg/logger"
-	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -43,14 +41,14 @@ func main() {
 	productsSvc := services.NewProductsService(productsRepository, log)
 	todosSvc := services.NewToDoService(todosRepository, log)
 	commentsSvc := services.NewCommentsService(commentsRepository, log)
-	aggregatedSvc := services.NewAggregatorService(aggregatorRepository, log)
+	aggregatedSvc := services.NewAggregatorService(commentsSvc, usrSvc, aggregatorRepository, log)
 
 	//4.Init Handlers layer
 	usersHandler := handlers.NewUserHandler(usrSvc, log)
 	productsHandler := handlers.NewProductHander(productsSvc, log)
 	todoHandler := handlers.NewTodoHandler(todosSvc, log)
 	commentsHandler := handlers.NewCommentsHandler(commentsSvc, log)
-	aggregateHandler := handlers.NewAggregatorHandler(aggregatedSvc, log)
+	aggregateHandler := handlers.NewAggregatorHandler(usrSvc, commentsSvc, aggregatedSvc, log)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -65,35 +63,4 @@ func main() {
 	fmt.Println("API Gateway is running on  nr port: ", port)
 	http.ListenAndServe(":5200", router)
 
-}
-
-func addUserHandler(respWriter http.ResponseWriter, request *http.Request) {
-	log := logger.New("INFO")
-	rawData, err := io.ReadAll(request.Body)
-	parsedJson := bytes.NewBuffer(rawData)
-
-	log.Info("addUserHandler called with body:", map[string]interface{}{
-		"body": parsedJson.String(),
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	resp, err := http.Post("https://dummyjson.com/users/add", "application/json", parsedJson)
-	if err != nil {
-		panic(err)
-	}
-
-	defer resp.Body.Close()
-
-	// Read and print the response
-	json, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("got data", rawData)
-	respWriter.Write(json)
 }

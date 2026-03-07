@@ -2,67 +2,52 @@ package handlers
 
 import (
 	"api-gateway/internal/services"
-	common_utils "api-gateway/pkg/common-utils"
 	"api-gateway/pkg/logger"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
-	"os"
 )
 
 type AggregatorHandler struct {
-	Svc    *services.AggregatorService
-	Logger *logger.Logger
+	UserSvc    *services.UserService
+	CommentSvc *services.CommentService
+	Svc        *services.AggregatorService
+	Logger     *logger.Logger
 }
 
-func NewAggregatorHandler(svc *services.AggregatorService, logger *logger.Logger) *AggregatorHandler {
+func NewAggregatorHandler(userSvc *services.UserService, commentSvc *services.CommentService, svc *services.AggregatorService, logger *logger.Logger) *AggregatorHandler {
 	return &AggregatorHandler{
-		Svc:    svc,
-		Logger: logger,
+		UserSvc:    userSvc,
+		CommentSvc: commentSvc,
+		Svc:        svc,
+		Logger:     logger,
 	}
 }
 
 func (handler *AggregatorHandler) AggregateData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-type", "application/json")
+	params := request.URL.Query()
 
 	var payloadData map[string]interface{}
-
-	_, err := handler.Svc.GetAggregatedData()
-
+	err := json.NewDecoder(request.Body).Decode(&payloadData)
+	queryParams := params.Get("include")
 	defer request.Body.Close()
-	body, err := io.ReadAll(request.Body)
-
-	fmt.Println("BODY LEN:", len(body))
-	fmt.Println("RAW BODY:", string(body))
 
 	if err != nil {
 		handler.Logger.Error(err.Error())
+		response.WriteHeader(http.StatusBadRequest)
+		return
 	}
+
+	//Payload is not used, is there just in case we will use it in future calls of the POST method from main.go
+	//ATM the logic is done via query params
+	aggregatedData := handler.Svc.GetAggregatedData(payloadData, queryParams)
+	response.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(response).Encode(&aggregatedData)
 
 	if err != nil {
 		handler.Logger.Error(err.Error())
+		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	if err := json.Unmarshal(body, &payloadData); err != nil {
-		handler.Logger.Error(err.Error())
-		return
-	}
-
-	formatted, err := json.MarshalIndent(payloadData, "", "  ")
-	if err != nil {
-		handler.Logger.Error(err.Error())
-		return
-	}
-
-	if err := os.WriteFile("assets/schemas.json", formatted, 0644); err != nil {
-		handler.Logger.Error(err.Error())
-		return
-	}
-
-	response.Write(body)
-	common_utils.WriteToFileBase64("assets/schemas.json", formatted)
-	fmt.Println("Data written to file successfully", string(body))
 
 }

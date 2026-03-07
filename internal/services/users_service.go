@@ -28,3 +28,19 @@ func (svc *UserService) GetUsers() ([]types.User, error) {
 
 	return users, nil
 }
+
+func (svc *UserService) FetchAsyncUsers() <-chan any {
+	ch := make(chan any)
+
+	go func() {
+		defer close(ch)
+		users, err := svc.GetUsers()
+		if err != nil {
+			svc.Logger.Error(err.Error())
+			return
+		}
+		ch <- users
+	}()
+
+	return ch
+}

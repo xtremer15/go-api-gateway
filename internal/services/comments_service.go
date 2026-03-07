@@ -28,3 +28,19 @@ func (svc *CommentService) GetComments() ([]types.Comment, error) {
 
 	return comments, nil
 }
+
+func (svc *CommentService) FetchAsyncComments() <-chan any {
+	ch := make(chan any)
+
+	go func() {
+		defer close(ch)
+		comments, err := svc.GetComments()
+		if err != nil {
+			svc.Logger.Error(err.Error())
+			return
+		}
+		ch <- comments
+	}()
+
+	return ch
+}

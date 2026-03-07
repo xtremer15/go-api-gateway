@@ -31,8 +31,9 @@ func WriteToFile(path string, dataToWrite any) {
 	file.WriteString(string(json))
 }
 
-func WriteToFileBase64(path string, data []byte) error {
-	return os.WriteFile(path, data, 0644)
+func WriteToFileBase64(path string, data any) error {
+	schema, _ := json.Marshal(data)
+	return os.WriteFile(path, schema, 0644)
 }
 
 func ReadJsonFile(path string) (any, error) {
