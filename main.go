@@ -1,8 +1,9 @@
 package main
 
 import (
+	registry "api-gateway/internal/async-fetch-registers"
+
 	"api-gateway/internal/handlers"
-	"api-gateway/internal/ports"
 	"api-gateway/internal/services"
 	"api-gateway/pkg/logger"
 	"fmt"
@@ -29,36 +30,23 @@ func main() {
 	httpClient := &http.Client{}
 	var port int = 5200
 
-	// 2. Initialize repository layer
-	usersRepository := ports.NewUserHttpRepo(httpClient)
-	productsRepository := ports.NewProductRepo(httpClient)
-	todosRepository := ports.NewHttpTodoRepo(httpClient, log)
-	commentsRepository := ports.NewHttpCommentRepo(httpClient, log)
-	aggregatorRepository := ports.NewAggregatorRepo(httpClient, log)
+	//Init Services layer
+	services := services.NewServiceContainer(httpClient, log)
 
-	//3.Init Services layer
-	usrSvc := services.NewUserService(usersRepository, log)
-	productsSvc := services.NewProductsService(productsRepository, log)
-	todosSvc := services.NewToDoService(todosRepository, log)
-	commentsSvc := services.NewCommentsService(commentsRepository, log)
-	aggregatedSvc := services.NewAggregatorService(commentsSvc, usrSvc, aggregatorRepository, log)
-
+	registry.RegisterAsyncFn("users", services.UsersSvc.FetchAsyncUsers)
+	registry.RegisterAsyncFn("comments", services.CommentSvc.FetchAsyncComments)
 	//4.Init Handlers layer
-	usersHandler := handlers.NewUserHandler(usrSvc, log)
-	productsHandler := handlers.NewProductHander(productsSvc, log)
-	todoHandler := handlers.NewTodoHandler(todosSvc, log)
-	commentsHandler := handlers.NewCommentsHandler(commentsSvc, log)
-	aggregateHandler := handlers.NewAggregatorHandler(usrSvc, commentsSvc, aggregatedSvc, log)
+	handlers := handlers.NewHandlersContainer(services, log)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
-	router.Get("/users", usersHandler.GetUsers)
-	router.Get("/products", productsHandler.GetProducts)
-	router.Get("/todos", todoHandler.GetTodos)
-	router.Get("/comments", commentsHandler.GetComments)
-	router.Post("/aggregate", aggregateHandler.AggregateData)
+	router.Get("/users", handlers.UsersHandler.GetUsers)
+	router.Get("/products", handlers.ProductsHandler.GetProducts)
+	router.Get("/todos", handlers.TodoHandler.GetTodos)
+	router.Get("/comments", handlers.CommentsHandler.GetComments)
+	router.Post("/aggregate", handlers.AggregatorHandler.AggregateData)
 
 	fmt.Println("API Gateway is running on  nr port: ", port)
 	http.ListenAndServe(":5200", router)

@@ -1,12 +1,11 @@
 package services
 
 import (
+	registry "api-gateway/internal/async-fetch-registers"
 	"api-gateway/internal/ports"
-	"api-gateway/internal/types/types"
 	common_utils "api-gateway/pkg/common-utils"
 	"api-gateway/pkg/logger"
 	"fmt"
-	"strings"
 )
 
 type AggregatorService struct {
@@ -30,45 +29,22 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 	fmt.Println("Getting aggregated data from multiple services...")
 
 	var dataToAggregate map[string]any = make(map[string]any)
+	activeChannels := make(map[string]<-chan any)
 
-	var usersChan <-chan any
-	var commmentsChan <-chan any
+	for key := range registry.GlobalRegistry {
+		fn := registry.GetRegisteredFn(key)
+		if fn != nil {
+			// Execute it dynamically and save the channel!
+			activeChannels[key] = fn()
+		} else {
+			svc.Logger.Error("Client requested unknown resource: " + key)
+		}
 
-	if strings.Contains(queryParams, "users") {
-		usersChan = svc.UserSvc.FetchAsyncUsers()
-		fmt.Println("query paras has users")
 	}
 
-	if strings.Contains(queryParams, "comments") {
-		commmentsChan = svc.CommsSvc.FetchAsyncComments()
-		fmt.Println("query paras has comments")
+	for resourceKey, ch := range activeChannels {
+		dataToAggregate[resourceKey] = <-ch
 	}
-
-	if usersChan != nil {
-		dataToAggregate["users"] = <-usersChan
-	}
-
-	if commmentsChan != nil {
-		dataToAggregate["comments"] = <-commmentsChan
-	}
-
-	rawUsers := dataToAggregate["users"]
-	rawComments := dataToAggregate["comments"]
-	typedUsers, okUsers := rawUsers.([]types.User)
-	typedComments, okComments := rawComments.([]types.Comment)
-
-	if !okUsers {
-		svc.Logger.Error("Not a users slice")
-	}
-
-	if !okComments {
-		svc.Logger.Error("Not a comments slice")
-	}
-
-	for i := range typedUsers {
-		typedUsers[i].Comment = typedComments[i]
-	}
-
 	delete(dataToAggregate, "comments")
 
 	common_utils.WriteToFileBase64("assets/schemas.json", data)

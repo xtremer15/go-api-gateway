@@ -4,7 +4,9 @@ import (
 	"api-gateway/internal/services"
 	"api-gateway/pkg/logger"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 )
 
 type AggregatorHandler struct {
@@ -30,8 +32,10 @@ func (handler *AggregatorHandler) AggregateData(response http.ResponseWriter, re
 	var payloadData map[string]interface{}
 	err := json.NewDecoder(request.Body).Decode(&payloadData)
 	queryParams := params.Get("include")
-	defer request.Body.Close()
+	resources := strings.Split(queryParams, ",")
 
+	fmt.Println(resources)
+	defer request.Body.Close()
 	if err != nil {
 		handler.Logger.Error(err.Error())
 		response.WriteHeader(http.StatusBadRequest)
