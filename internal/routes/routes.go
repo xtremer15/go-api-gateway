@@ -5,6 +5,7 @@ type appRoutes struct {
 	Products  string
 	Todos     string
 	Comments  string
+	Posts     string
 	Aggregate string
 }
 
@@ -13,5 +14,6 @@ var PathRoutes = appRoutes{
 	Products:  "/products",
 	Todos:     "/todos",
 	Comments:  "/comments",
+	Posts:     "/posts",
 	Aggregate: "/aggregate",
 }

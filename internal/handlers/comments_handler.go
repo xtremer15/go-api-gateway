@@ -34,4 +34,7 @@ func (handler *CommentHandler) GetComments(response http.ResponseWriter, request
 
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(comments)
+	handler.Logger.Info("Comments fetched successfully", map[string]interface{}{
+		"comments": comments,
+	})
 }

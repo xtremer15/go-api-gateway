@@ -35,6 +35,7 @@ func main() {
 
 	registry.RegisterAsyncFn("users", services.UsersSvc.FetchAsyncUsers)
 	registry.RegisterAsyncFn("comments", services.CommentSvc.FetchAsyncComments)
+	registry.RegisterAsyncFn("posts", services.PostsSvc.FetchAsyncPosts)
 	//4.Init Handlers layer
 	handlers := handlers.NewHandlersContainer(services, log)
 
@@ -46,6 +47,7 @@ func main() {
 	router.Get("/products", handlers.ProductsHandler.GetProducts)
 	router.Get("/todos", handlers.TodoHandler.GetTodos)
 	router.Get("/comments", handlers.CommentsHandler.GetComments)
+	router.Get("/posts", handlers.PostsHandler.GetPosts)
 	router.Post("/aggregate", handlers.AggregatorHandler.AggregateData)
 
 	fmt.Println("API Gateway is running on  nr port: ", port)

@@ -34,13 +34,13 @@ func (handler *AggregatorHandler) AggregateData(response http.ResponseWriter, re
 	queryParams := params.Get("include")
 	resources := strings.Split(queryParams, ",")
 
-	fmt.Println(resources)
+	fmt.Println("query param  din AggregateData", resources)
 	defer request.Body.Close()
-	if err != nil {
-		handler.Logger.Error(err.Error())
-		response.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	// if err != nil {
+	// 	handler.Logger.Error(err.Error())
+	// 	response.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
 
 	//Payload is not used, is there just in case we will use it in future calls of the POST method from main.go
 	//ATM the logic is done via query params

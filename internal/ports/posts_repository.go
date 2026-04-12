@@ -9,38 +9,35 @@ import (
 	"net/http"
 )
 
-type HttpCommentsRepository struct {
+type HttpPostsRepository struct {
 	logger  *logger.Logger
 	client  *http.Client
 	baseUrl string
 }
 
-func NewHttpCommentRepo(httpClient *http.Client, logger *logger.Logger) CommentRepo {
-	return &HttpCommentsRepository{
+func NewHttpPostRepo(httpClient *http.Client, logger *logger.Logger) PostsRepo {
+	return &HttpPostsRepository{
 		logger:  logger,
 		client:  httpClient,
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Comments + "?limit=240",
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Posts + "?limit=240",
 	}
 }
 
-func (repo *HttpCommentsRepository) GetComments() ([]types.Comment, error) {
+func (repo *HttpPostsRepository) GetPosts() ([]types.Post, error) {
 	resp, err := repo.client.Get(repo.baseUrl)
-
 	if err != nil {
-		return []types.Comment{}, err
+		return []types.Post{}, err
 	}
-
 	defer resp.Body.Close()
 
 	var result struct {
-		Comments []types.Comment `json:"comments"`
+		Posts []types.Post `json:"posts"`
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
-
 	if err != nil {
-		return []types.Comment{}, err
+		return []types.Post{}, err
 	}
 
-	return result.Comments, nil
+	return result.Posts, nil
 }

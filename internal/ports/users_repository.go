@@ -17,7 +17,7 @@ type HttpUsersRepository struct {
 
 func NewUserHttpRepo(httpClient *http.Client) UserRepo {
 	return &HttpUsersRepository{ // -> *HttpUsersRepository
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Users,
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Users + "?limit=240",
 		client:  httpClient,
 	}
 }

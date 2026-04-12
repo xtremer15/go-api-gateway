@@ -3,7 +3,8 @@ package services
 import (
 	registry "api-gateway/internal/async-fetch-registers"
 	"api-gateway/internal/ports"
-	common_utils "api-gateway/pkg/common-utils"
+	"api-gateway/internal/types/types"
+	merger "api-gateway/internal/utils/merger_engine"
 	"api-gateway/pkg/logger"
 	"fmt"
 )
@@ -25,8 +26,11 @@ func NewAggregatorService(commsSvc *CommentService, userSvc *UserService, aggreg
 }
 
 func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, queryParams string) any {
-	fmt.Println("recived", data, queryParams)
-	fmt.Println("Getting aggregated data from multiple services...")
+	svc.Logger.Info("Received ", map[string]interface{}{
+		"data":        data,
+		"queryParams": queryParams,
+	})
+	svc.Logger.Info("Getting aggregated data from multiple services...")
 
 	var dataToAggregate map[string]any = make(map[string]any)
 	activeChannels := make(map[string]<-chan any)
@@ -43,10 +47,44 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 	}
 
 	for resourceKey, ch := range activeChannels {
+		fmt.Println("resourceKey", resourceKey)
 		dataToAggregate[resourceKey] = <-ch
 	}
+	//Will need to add logic of deleting other props related to child in order for the returned
+	//objected not to contain the other properties at the whole root level
+	rawUsers := dataToAggregate["users"]
+	rawComments := dataToAggregate["comments"]
+	rawPosts := dataToAggregate["posts"]
 	delete(dataToAggregate, "comments")
+	delete(dataToAggregate, "posts")
 
-	common_utils.WriteToFileBase64("assets/schemas.json", data)
+	users, okUsers := rawUsers.([]types.User)
+	comments, okComments := rawComments.([]types.Comment)
+	posts, okPosts := rawPosts.([]types.Post)
+
+	if okUsers && okComments && okPosts {
+		var mergeableUsers []types.MergeableParent
+		var mergeableComments []types.MergeableChild
+		var mergeablePostsAsParent []types.MergeableParent
+		var mergeablePostsAsChild []types.MergeableChild
+
+		for i := range users {
+			mergeableUsers = append(mergeableUsers, &users[i])
+		}
+
+		for i := range comments {
+			mergeableComments = append(mergeableComments, &comments[i])
+		}
+
+		merger.Merger(mergeablePostsAsParent, mergeableComments)
+
+		for i := range posts {
+			mergeablePostsAsChild = append(mergeablePostsAsChild, &posts[i])
+		}
+
+		merger.Merger(mergeableUsers, mergeablePostsAsChild)
+	}
+
+	// common_utils.WriteToFileBase64("assets/schemas.json", data)
 	return dataToAggregate
 }

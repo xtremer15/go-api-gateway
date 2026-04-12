@@ -23,3 +23,7 @@ type CommentRepo interface {
 type AggregatorRepo interface {
 	GetAggregatedData() (any, error)
 }
+
+type PostsRepo interface {
+	GetPosts() ([]types.Post, error)
+}
