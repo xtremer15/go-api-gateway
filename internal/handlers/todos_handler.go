@@ -22,7 +22,7 @@ func NewTodoHandler(svc *services.ToDoService, logger *logger.Logger) *TodoHandl
 func (handler *TodoHandler) GetTodos(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 
-	todos, err := handler.Svc.GetProducts()
+	todos, err := handler.Svc.GetTodos()
 	if err != nil {
 		handler.Logger.Error("failed to fetch todos", map[string]interface{}{
 			"error": err.Error(),

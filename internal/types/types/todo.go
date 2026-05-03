@@ -6,3 +6,15 @@ type Todo struct {
 	Completed bool   `json:"completed"`
 	UserID    int    `json:"userId"`
 }
+
+func (todo *Todo) GetParentID() int {
+	return todo.UserID
+}
+
+func (todo *Todo) GetChildKey() int {
+	return todo.ID
+}
+
+func (todo *Todo) GetChildType() string {
+	return "todos"
+}

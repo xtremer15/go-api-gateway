@@ -56,12 +56,16 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 	rawCarts := dataToAggregate["carts"]
 	rawQuotes := dataToAggregate["quotes"]
 	rawRecipes := dataToAggregate["recipes"]
+	rawTodos := dataToAggregate["todos"]
+	rawProducts := dataToAggregate["products"]
 
 	delete(dataToAggregate, "comments")
 	delete(dataToAggregate, "posts")
 	delete(dataToAggregate, "carts")
 	delete(dataToAggregate, "quotes")
 	delete(dataToAggregate, "recipes")
+	delete(dataToAggregate, "todos")
+	delete(dataToAggregate, "products")
 
 	users, okUsers := rawUsers.([]types.User)
 	comments, okComments := rawComments.([]types.Comment)
@@ -69,6 +73,8 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 	carts, okCarts := rawCarts.([]types.Cart)
 	quotes, okQuotes := rawQuotes.([]types.Quote)
 	recipes, okRecipes := rawRecipes.([]types.Recipe)
+	todos, okTodos := rawTodos.([]types.Todo)
+	products, okProducts := rawProducts.([]types.Product)
 
 	var mergeableUsers []types.MergeableParent
 	var mergeableComments []types.MergeableChild
@@ -81,6 +87,8 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 
 	var mergeableQuotes []types.MergeableChild
 	var mergeableRecipes []types.MergeableChild
+	var mergeableTodosAsChild []types.MergeableChild
+	var mergeableProductsAsChild []types.MergeableChild
 
 	if okPosts && okComments {
 
@@ -112,14 +120,14 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 	if okCarts && okUsers {
 
 		for i := range carts {
-			mergeableCarts = append(mergeableCarts, &carts[i])
+			mergeableCartsAsChild = append(mergeableCartsAsChild, &carts[i])
 		}
 
 		for i := range users {
 			mergeableUsers = append(mergeableUsers, &users[i])
 		}
 
-		merger.Merger(mergeableUsers, mergeableCarts)
+		merger.Merger(mergeableUsers, mergeableCartsAsChild)
 	}
 
 	if okQuotes && okUsers {
@@ -146,6 +154,32 @@ func (svc *AggregatorService) GetAggregatedData(data map[string]interface{}, que
 		}
 
 		merger.Merger(mergeableUsers, mergeableRecipes)
+	}
+
+	if okTodos && okUsers {
+
+		for i := range todos {
+			mergeableTodosAsChild = append(mergeableTodosAsChild, &todos[i])
+		}
+
+		for i := range users {
+			mergeableUsers = append(mergeableUsers, &users[i])
+		}
+
+		merger.Merger(mergeableUsers, mergeableTodosAsChild)
+	}
+
+	if okProducts && okCarts {
+
+		for i := range products {
+			mergeableProductsAsChild = append(mergeableProductsAsChild, &products[i])
+		}
+
+		for i := range carts {
+			mergeableCartsAsParent = append(mergeableCartsAsParent, &carts[i])
+		}
+
+		merger.Merger(mergeableCartsAsParent, mergeableProductsAsChild)
 	}
 	// common_utils.WriteToFileBase64("assets/schemas.json", data)
 	return dataToAggregate

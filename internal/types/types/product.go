@@ -23,7 +23,7 @@ type Product struct {
 	Meta                 Meta       `json:"meta"`
 	Images               []string   `json:"images"`
 	Thumbnail            string     `json:"thumbnail"`
-	CartID               Cart       `json:"cartID"`
+	CartID               int        `json:"cartID"`
 }
 
 type Dimensions struct {
@@ -47,14 +47,14 @@ type Meta struct {
 	QRCode    string `json:"qrCode"`
 }
 
-func (procut *Product) GetParentID() int {
-	return procut.CartID.ID
+func (product *Product) GetParentID() int {
+	return product.CartID
 }
 
-func (procut *Product) GetChildKey() int {
-	return procut.ID
+func (product *Product) GetChildKey() int {
+	return product.ID
 }
 
-func (procut *Product) GetChildType() string {
+func (product *Product) GetChildType() string {
 	return "products"
 }

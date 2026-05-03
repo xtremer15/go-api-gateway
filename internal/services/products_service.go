@@ -28,3 +28,19 @@ func (svc *ProductsService) GetProducts() ([]types.Product, error) {
 
 	return products, nil
 }
+
+func (svc *ProductsService) FetchAsyncProducts() <-chan any {
+	ch := make(chan any)
+
+	go func() {
+		defer close(ch)
+		products, err := svc.GetProducts()
+		if err != nil {
+			svc.Logger.Error(err.Error())
+			return
+		}
+		ch <- products
+	}()
+
+	return ch
+}

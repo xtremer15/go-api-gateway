@@ -33,6 +33,7 @@ type User struct {
 	Cart       Cart     `json:"cart"`
 	Quotes     []Quote  `json:"quotes"`
 	Recipes    []Recipe `json:"recipes"`
+	Todos      []Todo   `json:"todos"`
 }
 
 type hair struct {
@@ -111,6 +112,16 @@ func (user *User) AttachChildren(children any, relation string) any {
 		}
 
 		user.Recipes = concreteRecipes
+
+	case "todos":
+		var concreteTodos []Todo
+		unpackedTodos, _ := children.([]MergeableChild)
+
+		for idx := range unpackedTodos {
+			concreteTodos = append(concreteTodos, *unpackedTodos[idx].(*Todo))
+		}
+
+		user.Todos = concreteTodos
 
 	case "cart":
 		var concreteCart Cart
