@@ -31,6 +31,7 @@ func (handler *AggregatorHandler) AggregateData(response http.ResponseWriter, re
 
 	var payloadData map[string]interface{}
 	err := json.NewDecoder(request.Body).Decode(&payloadData)
+
 	queryParams := params.Get("include")
 	resources := strings.Split(queryParams, ",")
 
@@ -44,7 +45,7 @@ func (handler *AggregatorHandler) AggregateData(response http.ResponseWriter, re
 
 	//Payload is not used, is there just in case we will use it in future calls of the POST method from main.go
 	//ATM the logic is done via query params
-	aggregatedData := handler.Svc.GetAggregatedData(payloadData, queryParams)
+	aggregatedData := handler.Svc.GetAggregatedData(payloadData, resources)
 	response.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(response).Encode(&aggregatedData)
 

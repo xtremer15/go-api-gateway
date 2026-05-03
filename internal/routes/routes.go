@@ -7,6 +7,9 @@ type appRoutes struct {
 	Comments  string
 	Posts     string
 	Aggregate string
+	Carts     string
+	Quotes    string
+	Recipes   string
 }
 
 var PathRoutes = appRoutes{
@@ -16,4 +19,7 @@ var PathRoutes = appRoutes{
 	Comments:  "/comments",
 	Posts:     "/posts",
 	Aggregate: "/aggregate",
+	Carts:     "/carts",
+	Quotes:    "/quotes",
+	Recipes:   "/recipes",
 }

@@ -9,31 +9,32 @@ import (
 	"net/http"
 )
 
-type HttpProductRepository struct {
+type HttpQuoteRepository struct {
 	logger  *logger.Logger
 	client  *http.Client
 	baseUrl string
 }
 
-func NewProductRepo(httpClient *http.Client) ProductsRepo {
-	return &HttpProductRepository{
+func NewHttpQuoteRepository(httpClient *http.Client, logger *logger.Logger) QuoteRepository {
+	return &HttpQuoteRepository{
+		logger:  logger,
 		client:  httpClient,
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Products,
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Quotes,
 	}
 }
 
-func (repo *HttpProductRepository) GetProducts() ([]types.Product, error) {
+func (repo *HttpQuoteRepository) GetQuotes() ([]types.Quote, error) {
 	resp, err := repo.client.Get(repo.baseUrl)
 	if err != nil {
-		return []types.Product{}, err
+		return []types.Quote{}, err
 	}
 	defer resp.Body.Close()
 
-	var result []types.Product
+	var result []types.Quote
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return []types.Product{}, err
+		return []types.Quote{}, err
 	}
 
 	return result, nil

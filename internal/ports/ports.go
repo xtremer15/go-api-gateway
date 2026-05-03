@@ -8,12 +8,8 @@ type UserRepo interface {
 	GetUsers() ([]types.User, error)
 }
 
-type ProductsRepo interface {
-	GetProducts() ([]types.Product, error)
-}
-
-type TodoRepo interface {
-	GetTodos() ([]types.Todo, error)
+type PostsRepo interface {
+	GetPosts() ([]types.Post, error)
 }
 
 type CommentRepo interface {
@@ -24,6 +20,22 @@ type AggregatorRepo interface {
 	GetAggregatedData() (any, error)
 }
 
-type PostsRepo interface {
-	GetPosts() ([]types.Post, error)
+type CartsRepo interface {
+	GetCarts() ([]types.Cart, error)
+}
+
+type ProductsRepo interface {
+	GetProducts() ([]types.Product, error)
+}
+
+type TodoRepo interface {
+	GetTodos() ([]types.Todo, error)
+}
+
+type QuoteRepository interface {
+	GetQuotes() ([]types.Quote, error)
+}
+
+type RecipeRepository interface {
+	GetRecipes() ([]types.Recipe, error)
 }

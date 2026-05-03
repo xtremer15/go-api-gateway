@@ -15,9 +15,9 @@ func Merger(parents []types.MergeableParent, children []types.MergeableChild) {
 
 	for _, parent := range parents {
 		parentID := parent.GetResourceID()
-		if matchingComments, exists := childrenByParent[parentID]; exists {
-			childType := matchingComments[0].GetChildType()
-			parent.AttachChildren(matchingComments, childType)
+		if matchingChildren, exists := childrenByParent[parentID]; exists {
+			childType := matchingChildren[0].GetChildType()
+			parent.AttachChildren(matchingChildren, childType)
 		}
 	}
 

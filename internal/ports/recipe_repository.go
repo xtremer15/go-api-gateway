@@ -9,31 +9,32 @@ import (
 	"net/http"
 )
 
-type HttpProductRepository struct {
+type HttpRecipeRepository struct {
 	logger  *logger.Logger
 	client  *http.Client
 	baseUrl string
 }
 
-func NewProductRepo(httpClient *http.Client) ProductsRepo {
-	return &HttpProductRepository{
+func NewHttpRecipeRepository(httpClient *http.Client, logger *logger.Logger) RecipeRepository {
+	return &HttpRecipeRepository{
+		logger:  logger,
 		client:  httpClient,
-		baseUrl: config.Load().BaseURL + routes.PathRoutes.Products,
+		baseUrl: config.Load().BaseURL + routes.PathRoutes.Recipes,
 	}
 }
 
-func (repo *HttpProductRepository) GetProducts() ([]types.Product, error) {
+func (repo *HttpRecipeRepository) GetRecipes() ([]types.Recipe, error) {
 	resp, err := repo.client.Get(repo.baseUrl)
 	if err != nil {
-		return []types.Product{}, err
+		return []types.Recipe{}, err
 	}
 	defer resp.Body.Close()
 
-	var result []types.Product
+	var result []types.Recipe
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return []types.Product{}, err
+		return []types.Recipe{}, err
 	}
 
 	return result, nil

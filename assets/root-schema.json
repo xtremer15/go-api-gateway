@@ -46,9 +46,9 @@
                     "idParam": null,
                     "children": {}
                 },
-                "image": {
-                    "endpoint": "/products",
-                    "idParam": "productId",
+                "images": {
+                    "endpoint": "/images/random",
+                    "idParam": null,
                     "children": {}
                 }
             }

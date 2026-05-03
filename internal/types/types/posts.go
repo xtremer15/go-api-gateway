@@ -40,7 +40,7 @@ func (post *Post) AttachChildren(children any, relation string) any {
 	return nil
 }
 
-func (post *Post) GetChildren(childrenID int) any {
+func (post *Post) GetChildren(childrenType string, childrenID int) any {
 	return post.Comments[childrenID].GetChildKey()
 }
 

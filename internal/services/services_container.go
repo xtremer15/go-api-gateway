@@ -13,6 +13,9 @@ type ServicesContainer struct {
 	ProductSvc        *ProductsService
 	PostsSvc          *PostsService
 	AggregatorService *AggregatorService
+	CartSvc           *CartsService
+	QuoteSvc          *QuoteService
+	RecipeSvc         *RecipeService
 }
 
 func NewServiceContainer(httpClient *http.Client, logger *logger.Logger) *ServicesContainer {
@@ -23,13 +26,18 @@ func NewServiceContainer(httpClient *http.Client, logger *logger.Logger) *Servic
 	commentsRepository := ports.NewHttpCommentRepo(httpClient, logger)
 	postsRepository := ports.NewHttpPostRepo(httpClient, logger)
 	aggregatorRepository := ports.NewAggregatorRepo(httpClient, logger)
-
+	cartsRepository := ports.NewHttpCartsRepo(httpClient, logger)
+	quotesRepository := ports.NewHttpQuoteRepository(httpClient, logger)
+	recipesRepository := ports.NewHttpRecipeRepository(httpClient, logger)
 	// Instantiate Services
 	userSvc := NewUserService(usersRepository, logger)
 	productSvc := NewProductsService(productsRepository, logger)
 	todoSvc := NewToDoService(todosRepository, logger)
 	commentSvc := NewCommentsService(commentsRepository, logger)
 	postsSvc := NewPostsService(postsRepository, logger)
+	quoteSvc := NewQuoteService(quotesRepository, logger)
+	cartSvc := NewCartsService(cartsRepository, logger)
+	recipeSvc := NewRecipeService(recipesRepository, logger)
 	aggregatorSvc := NewAggregatorService(commentSvc, userSvc, aggregatorRepository, logger)
 	// Return the container!
 	return &ServicesContainer{
@@ -38,6 +46,9 @@ func NewServiceContainer(httpClient *http.Client, logger *logger.Logger) *Servic
 		TodoSvc:           todoSvc,
 		CommentSvc:        commentSvc,
 		PostsSvc:          postsSvc,
+		QuoteSvc:          quoteSvc,
+		CartSvc:           cartSvc,
+		RecipeSvc:         recipeSvc,
 		AggregatorService: aggregatorSvc,
 	}
 }

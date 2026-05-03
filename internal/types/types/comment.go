@@ -9,7 +9,6 @@ type Comment struct {
 
 // Interfaces implementation
 func (comment *Comment) GetParentID() int {
-	// Might need to change it with post ID
 	return comment.PostID
 }
 

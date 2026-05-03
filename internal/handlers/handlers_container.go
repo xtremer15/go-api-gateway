@@ -12,6 +12,9 @@ type HandlersContainer struct {
 	CommentsHandler   *CommentHandler
 	PostsHandler      *PostsHandler
 	AggregatorHandler *AggregatorHandler
+	QuoteHandler      *QuoteHandler
+	CartHandler       *CartHandler
+	RecipeHandler     *RecipeHandler
 }
 
 func NewHandlersContainer(services *services.ServicesContainer, logger *logger.Logger) *HandlersContainer {
@@ -20,6 +23,9 @@ func NewHandlersContainer(services *services.ServicesContainer, logger *logger.L
 	todoHandler := NewTodoHandler(services.TodoSvc, logger)
 	commentsHandler := NewCommentsHandler(services.CommentSvc, logger)
 	postsHandler := NewPostsHandler(services.PostsSvc, logger)
+	quoteHandler := NewQuoteHandler(services.QuoteSvc, logger)
+	cartHandler := NewCartHandler(services.CartSvc, logger)
+	recipeHandler := NewRecipeHandler(services.RecipeSvc, logger)
 	aggregatorHandler := NewAggregatorHandler(services.UsersSvc, services.CommentSvc, services.AggregatorService, logger)
 	return &HandlersContainer{
 		UsersHandler:      usersHandler,
@@ -27,6 +33,9 @@ func NewHandlersContainer(services *services.ServicesContainer, logger *logger.L
 		TodoHandler:       todoHandler,
 		CommentsHandler:   commentsHandler,
 		PostsHandler:      postsHandler,
+		QuoteHandler:      quoteHandler,
+		CartHandler:       cartHandler,
+		RecipeHandler:     recipeHandler,
 		AggregatorHandler: aggregatorHandler,
 	}
 }

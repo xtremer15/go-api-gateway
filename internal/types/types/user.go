@@ -1,35 +1,38 @@
 package types
 
 type User struct {
-	ID         int     `json:"id" validate:"required"`
-	FirstName  string  `json:"firstName"`
-	LastName   string  `json:"lastName"`
-	MaidenName string  `json:"maidenName"`
-	Age        int     `json:"age"`
-	Gender     string  `json:"gender"`
-	Email      string  `json:"email" validate:"required,min=1,max=100"`
-	Phone      string  `json:"phone"`
-	Username   string  `json:"username"`
-	Password   string  `json:"password"`
-	BirthDate  string  `json:"birthDate"`
-	Image      string  `json:"image"`
-	BloodGroup string  `json:"bloodGroup"`
-	Height     float64 `json:"height"`
-	Weight     float64 `json:"weight"`
-	EyeColor   string  `json:"eyeColor"`
-	Hair       hair    `json:"hair"`
-	IP         string  `json:"ip"`
-	Address    address `json:"address"`
-	MacAddress string  `json:"macAddress"`
-	University string  `json:"university"`
-	Bank       bank    `json:"bank"`
-	Company    company `json:"company"`
-	EIN        string  `json:"ein"`
-	SSN        string  `json:"ssn"`
-	UserAgent  string  `json:"userAgent"`
-	Crypto     crypto  `json:"crypto"`
-	Role       string  `json:"role"`
-	Posts      []Post  `json:"posts"`
+	ID         int      `json:"id" validate:"required"`
+	FirstName  string   `json:"firstName"`
+	LastName   string   `json:"lastName"`
+	MaidenName string   `json:"maidenName"`
+	Age        int      `json:"age"`
+	Gender     string   `json:"gender"`
+	Email      string   `json:"email" validate:"required,min=1,max=100"`
+	Phone      string   `json:"phone"`
+	Username   string   `json:"username"`
+	Password   string   `json:"password"`
+	BirthDate  string   `json:"birthDate"`
+	Image      string   `json:"image"`
+	BloodGroup string   `json:"bloodGroup"`
+	Height     float64  `json:"height"`
+	Weight     float64  `json:"weight"`
+	EyeColor   string   `json:"eyeColor"`
+	Hair       hair     `json:"hair"`
+	IP         string   `json:"ip"`
+	Address    address  `json:"address"`
+	MacAddress string   `json:"macAddress"`
+	University string   `json:"university"`
+	Bank       bank     `json:"bank"`
+	Company    company  `json:"company"`
+	EIN        string   `json:"ein"`
+	SSN        string   `json:"ssn"`
+	UserAgent  string   `json:"userAgent"`
+	Crypto     crypto   `json:"crypto"`
+	Role       string   `json:"role"`
+	Posts      []Post   `json:"posts"`
+	Cart       Cart     `json:"cart"`
+	Quotes     []Quote  `json:"quotes"`
+	Recipes    []Recipe `json:"recipes"`
 }
 
 type hair struct {
@@ -90,11 +93,39 @@ func (user *User) AttachChildren(children any, relation string) any {
 		}
 
 		user.Posts = concretePosts
+	case "quotes":
+		var concreteQuotes []Quote
+		unpackedQuotes, _ := children.([]MergeableChild)
+
+		for idx := range unpackedQuotes {
+			concreteQuotes = append(concreteQuotes, *unpackedQuotes[idx].(*Quote))
+		}
+
+		user.Quotes = concreteQuotes
+	case "recipes":
+		var concreteRecipes []Recipe
+		unpackedRecipes, _ := children.([]MergeableChild)
+
+		for idx := range unpackedRecipes {
+			concreteRecipes = append(concreteRecipes, *unpackedRecipes[idx].(*Recipe))
+		}
+
+		user.Recipes = concreteRecipes
+
+	case "cart":
+		var concreteCart Cart
+		unpackedCart, _ := children.([]MergeableChild)
+
+		for idx := range unpackedCart {
+			concreteCart = *unpackedCart[idx].(*Cart)
+		}
+
+		user.Cart = concreteCart
 	}
 
 	return nil
 }
 
-func (user *User) GetChildren(childrenID int) any {
+func (user *User) GetChildren(childrenType string, childrenID int) any {
 	return user.Posts[childrenID].GetResourceID()
 }

@@ -25,10 +25,10 @@ func (handler *ProductsHandler) GetProducts(response http.ResponseWriter, reques
 	products, err := handler.Svc.GetProducts()
 
 	if err != nil {
-		handler.Logger.Error("failed to fetch users", map[string]interface{}{
+		handler.Logger.Error("failed to fetch products", map[string]interface{}{
 			"error": err.Error(),
 		})
-		http.Error(response, "failed to fetch users", http.StatusInternalServerError)
+		http.Error(response, "failed to fetch products", http.StatusInternalServerError)
 		return
 	}
 
